@@ -41,9 +41,13 @@
   }
   
   .red-row {
-    background-color: #F47174;
+    background-color: #c0a4a4;
   }
 
   .green-row {
     background-color: #71F4B0;
+  }
+
+  .match-started {
+    border: 5px solid #ba41bc;
   }
