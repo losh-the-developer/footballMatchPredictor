@@ -10,7 +10,8 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 
 app.get('/matches', async (req, res) => {
-  const matches = await fetchMatches();
+  const date = req.query.date;
+  const matches = await fetchMatches(date);
   res.json(matches);
 });
 

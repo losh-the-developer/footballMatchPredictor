@@ -1,10 +1,12 @@
 import React from 'react';
-import Table from './Table';
+import Navbar from './components/nav/Navbar';
+import Home from './Home';
 
 const App: React.FC = () => {
   return (
     <div className="App">
-      <Table />
+      <Navbar />
+      <Home />
     </div>
   );
 };
