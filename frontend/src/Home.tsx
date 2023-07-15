@@ -85,12 +85,13 @@ const Spinner = () => {
 
   useEffect(() => {
     async function fetchMatchData(): Promise<any> {
-      const leagues = await axios.get('http://localhost:5000/matches?date=20230707');
+      const leagues = await axios.get('http://localhost:5000/matches?date=');
       //const filteredActiveLeagues = filterOldMatches(leagues.data.leagues);
       const filteredActiveLeagues = leagues.data.leagues;
       let notStartedBetLeauges: { id: any; league: any; matches: any[]; ccode: any; }[] = [];
       let currentlyPlayingBetLeauges: { id: any; league: any; matches: any[]; ccode: any; }[] = [];
       let finishedBetLeauges: { id: any; league: any; matches: any[]; ccode: any; }[] = [];
+      let allBetLeauges: { id: any; league: any; matches: any[]; ccode: any; }[] = [];
 
       const dateOfData = new Date(filteredActiveLeagues[0].matches[0].time);
       let isDateBeforeToday: boolean = BeforeToday(dateOfData);
@@ -170,6 +171,9 @@ const Spinner = () => {
               notStartedBetMatches.push(match);
             }
 
+            if(matchBet && match.status.started){
+              console.log('match started: ', match);
+            }
             if(matchBet && (match.status.started || isDateTimeBeforeCurrent(match.time)) && !match.status.finished && !match.status.cancelled){
               currentlyPlayingBetMatches.push(match);
             } 
@@ -221,6 +225,7 @@ const Spinner = () => {
       console.log('filteredActiveLeagues', filteredActiveLeagues);
       setNotStartedBetMatches(notStartedBetLeauges);
       setFinishedBetMatchess(finishedBetLeauges);
+      setCurrentlyPlayingBetMatches(currentlyPlayingBetLeauges);
       
       //if its before today sort leagues by win percentage
       matchesWithTeamData.sort((a, b) => (a.winPercentage > b.winPercentage) ? -1 : 1);
@@ -253,10 +258,13 @@ const Spinner = () => {
   }
 
   function isDateTimeBeforeCurrent(dateString: string): boolean {
-    const givenDate = new Date(dateString);
-    const currentDate = new Date();
-    
-    return givenDate < currentDate;
+    // Convert the given date string into a Date object
+    var givenDateTime = new Date(dateString.replace(/(\d{2}).(\d{2}).(\d{4}) (\d{2}):(\d{2})/, '$3-$2-$1T$4:$5'));
+
+    // Create a new Date object for the current date and time
+    var currentDateTime = new Date();
+    // Compare the two Date objects
+    return givenDateTime < currentDateTime;
   }
 
   function getBetsWinPercentage(leagues: ILeague[]): [number, number, number] {
