@@ -78,6 +78,7 @@ const Spinner = () => {
 
   const Table: React.FC = () => {
   const [leagues, setMatchData] = useState<IData[]>([]);
+  const [allBetMatches, setAllBetMatches] = useState<ILeague[]>([]);
   const [notStartedBetMatches, setNotStartedBetMatches] = useState<ILeague[]>([]);
   const [currentlyPlayingBetMatches, setCurrentlyPlayingBetMatches] = useState<ILeague[]>([]);
   const [finishedBetMatches, setFinishedBetMatchess] = useState<ILeague[]>([]);
@@ -97,6 +98,7 @@ const Spinner = () => {
       let isDateBeforeToday: boolean = BeforeToday(dateOfData);
       const matchesWithTeamData = await Promise.all(
         filteredActiveLeagues.map(async (league: any) => {
+          let allBetMatches = [];
           let notStartedBetMatches = [];
           let currentlyPlayingBetMatches = [];
           let finishedBetMatches = [];
@@ -167,14 +169,15 @@ const Spinner = () => {
 
             match.bet = matchBet;
 
-            if(matchBet && !match.status.started && !match.status.cancelled){
+            if(matchBet && !match.status.cancelled){
+              allBetMatches.push(match);
+            }
+
+            if(matchBet && (!match.status.started || !isGameStarted(match.time)) && !match.status.cancelled){
               notStartedBetMatches.push(match);
             }
 
-            if(matchBet && match.status.started){
-              console.log('match started: ', match);
-            }
-            if(matchBet && (match.status.started || isDateTimeBeforeCurrent(match.time)) && !match.status.finished && !match.status.cancelled){
+            if(matchBet && (match.status.started || isGameStarted(match.time)) && !match.status.finished && !match.status.cancelled){
               currentlyPlayingBetMatches.push(match);
             } 
 
@@ -185,6 +188,15 @@ const Spinner = () => {
                 finishedBetMatches.push(match);
               }
             }
+          }
+
+          if(allBetMatches.length > 0){
+            allBetLeauges.push({
+              "id": league.id,
+              "league" : league.name,
+              "matches" : allBetMatches,
+              "ccode" : league.ccode
+            })
           }
 
           if(notStartedBetMatches.length > 0){
@@ -222,7 +234,8 @@ const Spinner = () => {
           return league;
         })
       );
-      console.log('filteredActiveLeagues', filteredActiveLeagues);
+
+      setAllBetMatches(notStartedBetLeauges);
       setNotStartedBetMatches(notStartedBetLeauges);
       setFinishedBetMatchess(finishedBetLeauges);
       setCurrentlyPlayingBetMatches(currentlyPlayingBetLeauges);
@@ -257,14 +270,14 @@ const Spinner = () => {
     return dateTimeString.substring(dateTimeString.indexOf(' ') + 1);
   }
 
-  function isDateTimeBeforeCurrent(dateString: string): boolean {
+  function isGameStarted(dateString: string): boolean {
     // Convert the given date string into a Date object
-    var givenDateTime = new Date(dateString.replace(/(\d{2}).(\d{2}).(\d{4}) (\d{2}):(\d{2})/, '$3-$2-$1T$4:$5'));
+    var gameTime = new Date(dateString.replace(/(\d{2}).(\d{2}).(\d{4}) (\d{2}):(\d{2})/, '$3-$2-$1T$4:$5'));
 
     // Create a new Date object for the current date and time
     var currentDateTime = new Date();
     // Compare the two Date objects
-    return givenDateTime < currentDateTime;
+    return gameTime < currentDateTime;
   }
 
   function getBetsWinPercentage(leagues: ILeague[]): [number, number, number] {
@@ -442,6 +455,38 @@ return (
               </table>
             </div>
           ))}
+
+
+<div className='allBetMatches'>
+<h1 style={{ textTransform: 'uppercase' }}> All Betting matches (over 1.5): ({ allBetMatches.length }) </h1>
+
+{allBetMatches.map((league) => (
+            <div key={league.id}>
+              <h2>{league.league} ({league.ccode})</h2>
+              <table className="table">
+                <tbody>
+                  {league.matches.map((match) => (    
+                    <React.Fragment key={match.id}>
+                      { (
+                        <tr className={`${match.bet ? 'green-row' : 'red-row'} ${match.status.started ? 'match-started' : 'match-not-started'}`}>
+                          <td>{match.home.name} { match.home.hotForm ? '🔥' : ''}
+                          <br />
+                          ({match.home.teamForm.toString()})
+                          </td>
+                          <td>{formatTime(match.time)}</td>
+                          <td>{match.away.name} { match.away.hotForm ? '🔥' : ''}
+                          <br />
+                          ({match.away.teamForm.toString()})
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
+</div>
 
 <div className='notStartedBetMatches'>
 <h1 style={{ textTransform: 'uppercase' }}> Betting matches not started yet (over 1.5): ({ notStartedBetMatches.length }) </h1>
