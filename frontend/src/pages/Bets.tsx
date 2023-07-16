@@ -76,7 +76,7 @@ const Spinner = () => {
   );
 }
 
-  const Table: React.FC = () => {
+  const Bets: React.FC = () => {
   const [leagues, setMatchData] = useState<IData[]>([]);
   const [allBetMatches, setAllBetMatches] = useState<ILeague[]>([]);
   const [notStartedBetMatches, setNotStartedBetMatches] = useState<ILeague[]>([]);
@@ -407,7 +407,9 @@ return (
     <Spinner />
   ) : 
     <div className="container">
-          {leagues.map((league) => (
+      <h1>Betting Page</h1>
+      <div className="table-container">
+      {leagues.map((league) => (
             <div key={league.id}>
               <h2>{league.name} ({league.ccode})</h2>
               <hr />
@@ -420,13 +422,13 @@ return (
                       hot: any;
                       lastFiveGoalAvg: ReactNode;
                       teamForm: any; score: any; name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; 
-}; away: {
-  hotForm: any;
-  hot: any;
-  lastFiveGoalAvg: ReactNode;
-  teamForm: any; score: any; name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; 
-};
-}) => (    
+                                }; away: {
+                                  hotForm: any;
+                                  hot: any;
+                                  lastFiveGoalAvg: ReactNode;
+                                  teamForm: any; score: any; name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; 
+                                };
+                  }) => (    
                     <React.Fragment key={match.id}>
                       { (
                         <tr className={`${match.bet ? 'green-row' : 'red-row'} ${match.status.started ? 'match-started' : 'match-not-started'}`}>
@@ -455,8 +457,10 @@ return (
               </table>
             </div>
           ))}
+      </div>
+   
 
-
+<div className="table-container">
 <div className='allBetMatches'>
 <h1 style={{ textTransform: 'uppercase' }}> All Betting matches (over 1.5): ({ allBetMatches.length }) </h1>
 
@@ -585,10 +589,12 @@ return (
             </div>
           ))}
 </div>
+</div>
+
 
 
         </div>
       );
 };
 
-export default Table;
+export default Bets;

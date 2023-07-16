@@ -1,12 +1,10 @@
 import React from 'react';
-import Navbar from './components/nav/Navbar';
-import Home from './Home';
+import Routes from './Routes';
 
-const App: React.FC = () => {
+const App = () => {
   return (
-    <div className="App">
-      <Navbar />
-      <Home />
+    <div>
+      <Routes />
     </div>
   );
 };
