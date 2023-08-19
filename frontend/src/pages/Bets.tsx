@@ -86,7 +86,7 @@ const Spinner = () => {
 
   useEffect(() => {
     async function fetchMatchData(): Promise<any> {
-      const leagues = await axios.get('http://localhost:5000/matches?date=');
+      const leagues = await axios.get('http://localhost:5555/matches?date=20230812');
       //const filteredActiveLeagues = filterOldMatches(leagues.data.leagues);
       const filteredActiveLeagues = leagues.data.leagues;
       let notStartedBetLeauges: { id: any; league: any; matches: any[]; ccode: any; }[] = [];
@@ -112,12 +112,8 @@ const Spinner = () => {
             
             let matchBet = false;
       
-            const homeTeamResponse = await axios.get(`http://localhost:5000/teams?id=${homeTeamId}`);
-            const homeTeamData: any = homeTeamResponse.data;
-          
-            // Fetch data for the away team
-            const awayTeamResponse = await axios.get(`http://localhost:5000/teams?id=${awayTeamId}`);
-            const awayTeamData: any = awayTeamResponse.data;
+            const homeTeamData: any = fetchTeamData(homeTeamId);
+            const awayTeamData: any = fetchTeamData(awayTeamId);
 
             let homeTeamForm = [];
             let awayTeamForm = [];
@@ -245,6 +241,17 @@ const Spinner = () => {
 
       return matchesWithTeamData;
     }
+
+    const fetchTeamData = async (teamId: any) => {
+      try {
+        const response = await axios.get(`http://localhost:5555/teams?id=${teamId}`);
+        const data = response.data;
+        return data;
+      } catch (error) {
+        console.error("Error fetching team data:", error);
+        return null; // Return null or some default value indicating an error
+      }
+    };
     
     // Call the fetchMatchData function
     fetchMatchData()
@@ -259,7 +266,6 @@ const Spinner = () => {
         setIsLoading(false);
       });
     
-
   }, []);
 
   function BeforeToday(date:string | number | Date): boolean {
@@ -590,9 +596,6 @@ return (
           ))}
 </div>
 </div>
-
-
-
         </div>
       );
 };
