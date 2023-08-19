@@ -5,7 +5,7 @@ const fetchTeam = require('./services/fetchTeam');
 const axios = require('axios');
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5555;
 
 app.use(cors());
 
